@@ -37,6 +37,8 @@ int clean_addr;
 
 byte notsleeping = 0;
 byte clean_dat[3][18];
+byte downmap[3] = { 2, 0, 1 };
+byte upmap[3] = { 0, 2, 1 };
 
 void setup() {
 	int i;
@@ -98,6 +100,19 @@ void draw_spr(byte spr[], int haddr) {
     for(i=0;i<spr_height;i++) {
         memcpy((char *)haddr, &spr[b], spr_bwidth); // draw one full line from frame
         b += spr_bwidth; // next line in frame
+        haddr+=40; //next line on screen
+    }
+}
+
+// draw a third of the rows from frame pointed to by spr, at screen address haddr
+void draw_spr_rows(byte spr[], byte w, byte rowsnr, int haddr) {
+	byte i,b;
+	if(rowsnr==0) b=0;
+	if(rowsnr==1) { haddr=haddr+240; b=18; }
+	if(rowsnr==2) { haddr=haddr+480; b=36; }
+    for(i=0;i<6;i++) {
+		memcpy((char *)haddr, &spr[b], w);
+        b += w; // next line in frame
         haddr+=40; //next line on screen
     }
 }
@@ -259,10 +274,10 @@ void animate_sprite(struct sprite *spr) {
 						if(need_cleanup) { draw_spr_col(clean_spr, spr->steps, 0xa000+spr->pos-1); need_cleanup = 0; }
 						draw_spr(spr->walk_right_ani+spr->frame_pointer,0xa000+spr->pos); break;
 			case DOWN: 	move_down(player);
-						if(need_cleanup) { draw_spr(clean_spr,0xa000+spr->origpos); need_cleanup = 0; }
+						if(need_cleanup) { draw_spr_rows(clean_spr, 3, downmap[spr->steps], 0xa000+spr->origpos); need_cleanup = 0; }
 						draw_spr(spr->walk_down_ani+spr->frame_pointer,0xa000+spr->pos); break;
 			case UP: 	move_up(player);
-						if(need_cleanup) { draw_spr(clean_spr,0xa000+spr->origpos); need_cleanup = 0; }
+						if(need_cleanup) { draw_spr_rows(clean_spr, 3, upmap[spr->steps], 0xa000+spr->origpos); need_cleanup = 0; }
 						draw_spr(spr->walk_up_ani+spr->frame_pointer,0xa000+spr->pos);
 						break;
 		}
