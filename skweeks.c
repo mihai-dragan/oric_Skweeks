@@ -40,6 +40,7 @@ unsigned int last_frame_offset  = 108;
 
 byte object_under;
 byte need_cleanup = 0;
+byte need_cdclean = 0;
 byte* clean_spr;
 int clean_addr;
 
@@ -69,8 +70,8 @@ void setup() {
 			 c = 0;
 		}
 	}
-	memset((char*)0xBF68, 0, 120);  // Clear lower text area
 	POKE(0xbf68, 7); // set white ink for first text line
+	memset((char*)0xBF69, 0, 119);  // Clear lower text area
 }
 
 struct sprite {
@@ -269,7 +270,26 @@ void move_up(struct sprite *spr) {
 }
 
 void animate_sprite(struct sprite *spr) {
-    // draw 
+    // logic
+    object_under = lvlgrid[player->gridpos]>>3;
+	clean_spr=object_sprs[object_under];
+	if(object_under == 1) {
+		lives = lives + 1;
+		POKE(0xbf7a,48+(lives/10)); POKE(0xbf7b,48+(lives%10));
+		lvlgrid[player->gridpos] = 0;
+	}
+	if(object_under == 2) {
+		lvltime = lvltime + 20;
+		min2 = lvltime/600; min1 = (lvltime/60)%10; secs2 = (lvltime%60)/10 ; secs1 = (lvltime%60)%10;
+		POKE(0xbf6e, 48+min2); POKE(0xbf6f, 48+min1); POKE(0xbf71, 48+secs2); POKE(0xbf72, 48+secs1);
+		lvlgrid[player->gridpos] = 0;
+	}
+	if(object_under == 3) {
+		jokers = jokers + 1;
+		POKE(0xbf8e,48+(jokers/10)); POKE(0xbf8f,48+(jokers%10));
+		lvlgrid[player->gridpos] = 0;
+	}
+	// draw
     if(spr->action==STAY || spr->action==SLEEP) {
 		if(spr->action==SLEEP) draw_spr(spr->sleep_ani,0xa000+spr->pos);
 		else draw_spr(spr->stay_ani,0xa000+spr->pos);
@@ -291,24 +311,6 @@ void animate_sprite(struct sprite *spr) {
 		}
 	}
 	if(spr->action==MOVE) {
-		object_under = lvlgrid[player->gridpos]>>3;
-		clean_spr=object_sprs[object_under];
-        if(object_under == 1) {
-            lives = lives + 1;
-            POKE(0xbf7a,48+(lives/10)); POKE(0xbf7b,48+(lives%10));
-            lvlgrid[player->gridpos] = 0;
-        }
-        if(object_under == 2) {
-            lvltime = lvltime + 20;
-            min2 = lvltime/600; min1 = (lvltime/60)%10; secs2 = (lvltime%60)/10 ; secs1 = (lvltime%60)%10;
-            POKE(0xbf6e, 48+min2); POKE(0xbf6f, 48+min1); POKE(0xbf71, 48+secs2); POKE(0xbf72, 48+secs1);
-            lvlgrid[player->gridpos] = 0;
-        }
-        if(object_under == 3) {
-            jokers = jokers + 1;
-            POKE(0xbf8e,48+(jokers/10)); POKE(0xbf8f,48+(jokers%10));
-            lvlgrid[player->gridpos] = 0;
-        }
 		switch(spr->movedir) {
 			case LEFT:	move_left(player);
 						if(need_cleanup) { draw_spr_col(clean_spr, 2-spr->steps, 0xa000+spr->pos+3); need_cleanup = 0; }
@@ -317,9 +319,11 @@ void animate_sprite(struct sprite *spr) {
 						if(need_cleanup) { draw_spr_col(clean_spr, spr->steps, 0xa000+spr->pos-1); need_cleanup = 0; }
 						draw_spr(spr->walk_right_ani+spr->frame_pointer,0xa000+spr->pos); break;
 			case DOWN: 	move_down(player);
+						if(need_cdclean) { draw_spr_rows(blue_exit, 3, 0, 0xa000+spr->origpos); need_cdclean = 0; }
 						if(need_cleanup) { draw_spr_rows(clean_spr, 3, downmap[spr->steps], 0xa000+spr->origpos); need_cleanup = 0; }
 						draw_spr(spr->walk_down_ani+spr->frame_pointer,0xa000+spr->pos); break;
 			case UP: 	move_up(player);
+						if(need_cdclean) { draw_spr_rows(blue_exit, 3, 2, 0xa000+spr->origpos); need_cdclean = 0; }
 						if(need_cleanup) { draw_spr_rows(clean_spr, 3, upmap[spr->steps], 0xa000+spr->origpos); need_cleanup = 0; }
 						draw_spr(spr->walk_up_ani+spr->frame_pointer,0xa000+spr->pos);
 						break;
@@ -433,6 +437,13 @@ void clear_screen() {
 	}
 }
 
+void wait_centis(int centisecs) {
+	clock_t clk = clock();
+	while(clock()-clk < centisecs) {
+		clock();
+	}
+}
+
 void wait(int sec) {
 	clock_t clk = clock();
 	while(sec>((clock()-clk)/CLOCKS_PER_SEC)) {
@@ -460,34 +471,38 @@ void main() {
 		POKE(0xbf8f,48+(jokers%10));
 		lvltime = lvlsec[curlevel];
 		min2 = lvltime/600; min1 = (lvltime/60)%10; secs2 = (lvltime%60)/10 ; secs1 = (lvltime%60)%10;
+		if(kbhit()>0) cgetc();
 		while(notsleeping > 0 && restartlvl == 0) {
 			if(kbhit()>0 && (player->action==STAY || player->action==SLEEP)) {
 				c = cgetc();
-				if(c==CH_CURS_RIGHT && (byte)(lvlgrid[player->gridpos+1]<<5)==0) {
+				if(c=='d' && (byte)(lvlgrid[player->gridpos+1]<<5)==0) {
                     if(player->action == SLEEP) notsleeping = notsleeping + 1;
 					player->action = MOVE;
 					player->movedir = RIGHT;
 				}
-				if(c==CH_CURS_LEFT && (byte)(lvlgrid[player->gridpos-1]<<5)==0) {
+				if(c=='a' && (byte)(lvlgrid[player->gridpos-1]<<5)==0) {
                     if(player->action == SLEEP) notsleeping = notsleeping + 1;
 					player->action = MOVE;
 					player->movedir = LEFT;
 				}
-				if(c==CH_CURS_DOWN && (byte)(lvlgrid[player->gridpos+13]<<5)==0) {
+				if(c=='s' && (byte)(lvlgrid[player->gridpos+13]<<5)==0) {
                     if(player->action == SLEEP) notsleeping = notsleeping + 1;
 					player->action = MOVE;
 					player->movedir = DOWN;
+					need_cdclean = 1;
 				}
-				if(c==CH_CURS_UP && (byte)(lvlgrid[player->gridpos-13]<<5)==0) {
+				if(c=='w' && (byte)(lvlgrid[player->gridpos-13]<<5)==0) {
                     if(player->action == SLEEP) notsleeping = notsleeping + 1;
 					player->action = MOVE;
 					player->movedir = UP;
+					need_cdclean = 1;
 				}
 				if(c==CH_ENTER) {
 					cur_player = cur_player + 1;
 					if(!(cur_player<nr_skweeks)) cur_player = 0;
 					player = &skweeks[cur_player];
 					player->action = SELECT;
+					while(kbhit()>0) wait_centis(1);
 				}
 				if(c==CH_ESC) {
 					restartlvl = 1;
