@@ -57,3 +57,28 @@ void draw_selected(byte spr[], int haddr) {
         haddr+=40; //next line on screen
     }
 }
+
+void draw_teleport(byte spr[], int haddr, byte step) {
+	byte i;
+    int b = 0;
+    for(i=0;i<spr_height;i++) {
+        if(i==step) memcpy((char *)haddr, &spr[b], spr_bwidth); // draw one full line from frame
+        b += spr_bwidth; // next line in frame
+        haddr+=40; //next line on screen
+    }
+}
+
+void draw_char(byte cnum, int haddr) {
+    byte i;
+    unsigned int offst = cnum<<3;
+    for(i=0;i<8;i++) {
+        byte* addr = (byte*)haddr;
+        *addr = 64+chr[offst+i];
+        haddr=haddr+40;
+    }
+}
+
+void draw_string(byte str[], int haddr) {
+	byte i;
+	for(i=0; i<strlen(str); i++) draw_char(str[i]-32, haddr+i);
+}
