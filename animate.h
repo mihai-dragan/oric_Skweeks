@@ -12,7 +12,7 @@ void animate_sprite(struct sprite *spr) {
 		else draw_spr(spr->stay_ani,draw_saddr+spr->pos);
 	}
 	if(spr->action==SELECT) {
-		if(select_cntr==1) { load_instrA(select); playtime = 1; play_chanA(0); }
+		if(select_cntr==1) { stop_sound(); load_instrA(select); playtime = 1; play_chanA(0); }
 		if(select_cntr<7) {
 			if((lvlgrid[spr->gridpos]>>3)==spr->color+4) draw_selected(spr->sleep_ani,draw_saddr+spr->pos);
 			else draw_selected(spr->stay_ani,draw_saddr+spr->pos);
@@ -30,7 +30,7 @@ void animate_sprite(struct sprite *spr) {
 	}
 
 	if(spr->action == TELEPORT) {
-		if(select_cntr==0) { load_instrA(zoom); playing = 1; playtime = 1; play_chanA(0); }
+		if(select_cntr==0) { stop_sound(); load_instrA(zoom); playing = 1; playtime = 1; play_chanA(0); }
 		object_under = lvlgrid[player->gridpos]>>3;
 		clean_spr=object_sprs[object_under];
 		draw_teleport(clean_spr, draw_saddr+spr->pos, select_cntr);
@@ -71,13 +71,13 @@ void animate_sprite(struct sprite *spr) {
     object_under = lvlgrid[player->gridpos]>>3;
 	clean_spr=object_sprs[object_under];
 	if(object_under == 1) {
-		load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
 		lives = lives + 1;
 		POKE(0xBF91,48+(lives/10)); POKE(0xBF92,48+(lives%10));
 		lvlgrid[player->gridpos] = 0;
 	}
 	if(object_under == 2) {
-		load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
 		lvltime = lvltime + 20;
 		min2 = lvltime/600; min1 = (lvltime/60)%10; secs2 = (lvltime%60)/10 ; secs1 = (lvltime%60)%10;
 		POKE(0xBFA2, 48+min2); POKE(0xBFA3, 48+min1); POKE(0xBFA5, 48+secs2); POKE(0xBFA6, 48+secs1);
@@ -85,32 +85,32 @@ void animate_sprite(struct sprite *spr) {
 		lvlgrid[player->gridpos] = 0;
 	}
 	if(object_under == 3) {
-		load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
 		jokers = jokers + 1;
 		POKE(0xBFB6,48+(jokers/10)); POKE(0xBFB7,48+(jokers%10));
 		lvlgrid[player->gridpos] = 0;
 	}
 	if(object_under == 8 && player->steps == 0) {
-		load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
 		player->action = MOVE;
 		player->movedir = RIGHT;
 		for(i=0; i<kbhit(); i++) cgetc();
 	}
 	if(object_under == 9 && player->steps == 0) {
-		load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
 		player->action = MOVE;
 		player->movedir = LEFT;
 		for(i=0; i<kbhit(); i++) cgetc();
 	}
 	if(object_under == 10 && player->steps == 0) {
-		load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
 		player->action = MOVE;
 		player->movedir = UP;
 		need_cdclean = 1;
 		for(i=0; i<kbhit(); i++) cgetc();
 	}
 	if(object_under == 11 && player->steps == 0) {
-		load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
+		stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1;
 		player->action = MOVE;
 		player->movedir = DOWN;
 		need_cdclean = 1;

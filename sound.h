@@ -118,6 +118,7 @@ byte play_chanB(unsigned int period) {
 void stop_sound() {
 	playtime = 0;
 	playing = 0;
+	mixer = 127;
 	w8912(AY_Mixer, 127);
 	w8912(AY_AmplitudeA, 0);
 	w8912(AY_AmplitudeB, 0);

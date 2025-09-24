@@ -2,20 +2,20 @@ byte step = 0;
 int addr;
 
 byte rainbow[6] = { 1, 3, 2, 6, 4, 5};
-byte *intro_txt[] =  { "It's way past their bedtime and they",
+char *intro_txt[] =  { "It's way past their bedtime and they",
 "are mad, mean and angry!",
 "Guide each of them to their respective",
 "color sleeping pods to put them to",
 "sleep." };
-byte *instr_txt[] = { "--Instructions--",
+char *instr_txt[] = { "--Instructions--",
 "Select skweek [RETURN]",
 "Move left     [A]",
 "Move right    [D]",
 "Move up       [W]",
 "Move down     [S]" };
-byte credit_odev1[] = "Original";
-byte credit_odev2[] = "game by";
-byte *credits_txt[] = { "Original programmers",
+char credit_odev1[] = "Original";
+char credit_odev2[] = "game by";
+char *credits_txt[] = { "Original programmers",
 " [Aimga] Francois Mathieu",
 " [ATARI ST] Xavier Monset",
 " [ATARI ST] Pascal Caillaud",
@@ -130,10 +130,10 @@ void play_intro() {
 						i = 0;
 					}
 					if(step==55) {
-						if(i==0) { draw_spr(green_stay,0xA716); i++; prevaclk = clock(); continue; }
-						if(i==1) { draw_spr(blue_stay,0xA719); i++; prevaclk = clock(); continue; }
-						if(i==2) { draw_spr(red_stay,0xA71C); i++; prevaclk = clock();continue; }
-						if(i==3) { draw_spr(yellow_stay,0xA71F); i=0; }
+						if(i==0) { draw_spr(green_stay,0xA73E); i++; prevaclk = clock(); continue; }
+						if(i==1) { draw_spr(blue_stay,0xA741); i++; prevaclk = clock(); continue; }
+						if(i==2) { draw_spr(red_stay,0xA744); i++; prevaclk = clock();continue; }
+						if(i==3) { draw_spr(yellow_stay,0xA747); i=0; }
 					}
 					if(step > 55 && step < 61) {
 						if(i<strlen(intro_txt[step-56])) {

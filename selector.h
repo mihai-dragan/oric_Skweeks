@@ -1,9 +1,9 @@
-byte *select_txt[]	 = {"1 : Play Game",
+char *select_txt[]	 = {"1 : Play Game",
 	" ",
 	"2 : Enter Password" };
-byte pass_txt[] = "Enter a Password  ........";
-byte illegal[] =  "Illegal Password          ";
-byte pass_sto[8];
+char pass_txt[] = "Enter a Password  ........";
+char illegal[] =  "Illegal Password          ";
+char pass_sto[8];
 
 byte check_pass() {
 	byte i,j;

@@ -78,7 +78,7 @@ void draw_char(byte cnum, int haddr) {
     }
 }
 
-void draw_string(byte str[], int haddr) {
+void draw_string(char str[], int haddr) {
 	byte i;
 	for(i=0; i<strlen(str); i++) draw_char(str[i]-32, haddr+i);
 }

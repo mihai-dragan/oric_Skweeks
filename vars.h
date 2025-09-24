@@ -46,8 +46,8 @@ byte clean_dat[3][18];
 byte downmap[3] = { 2, 0, 1 };
 byte upmap[3] = { 0, 2, 1 };
 
-byte statxt[39] = "LIVES            TIMER           JOKERS";
-byte any_key[] = "Press any key to start";
+char statxt[39] = "LIVES            TIMER           JOKERS";
+char any_key[] = "Press any key to start";
 unsigned int draw_saddr = 0xa3c0;  // start address of game draw area
 unsigned int draw_oaddr = 0xa3c1;  // offset address of game draw area
 byte* chr = (byte*)0x9900;  // pointer to ASCII characters
