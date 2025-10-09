@@ -38,7 +38,7 @@ struct instrument {
 
 struct instrument instruments[2];
 
-unsigned int freq_table[4][12];
+unsigned int freq_table[3][12];
 byte mixer = 127;
 byte playtime = 0;
 

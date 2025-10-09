@@ -1,7 +1,7 @@
 void load_level() {
 	byte i = 0;
 	byte x,y;
-	int pos = draw_oaddr;
+	int pos = 0xa3c1;
 	cur_player = 0;
 	notsleeping = 0;
 	nr_skweeks = 0;
@@ -30,14 +30,15 @@ void load_level() {
             if(lvlgrid[i] == 0x08) draw_spr(heart,pos);
             if(lvlgrid[i] == 0x10) draw_spr(timer,pos);
             if(lvlgrid[i] == 0x18) draw_spr(joker,pos);
-			if(lvlgrid[i] == 0x20) draw_spr(blue_exit,pos);
-			if(lvlgrid[i] == 0x28) draw_spr(red_exit,pos);
+			if(lvlgrid[i] == 0x20) draw_spr(blue_exit,pos); 
+			if(lvlgrid[i] == 0x28) draw_spr(red_exit,pos); 
 			if(lvlgrid[i] == 0x30) draw_spr(yellow_exit,pos);
 			if(lvlgrid[i] == 0x38) draw_spr(green_exit,pos);
 			if(lvlgrid[i] == 0x40) draw_spr(arrow_right,pos);
 			if(lvlgrid[i] == 0x48) draw_spr(arrow_left,pos);
 			if(lvlgrid[i] == 0x50) draw_spr(arrow_up,pos);
 			if(lvlgrid[i] == 0x58) draw_spr(arrow_down,pos);
+			if(lvlgrid[i] == 0x80) draw_spr(bumper,pos);
 			if(lvlgrid[i] == 0x60) {
 				draw_spr(blue_tele,pos);
 				if(tele_grid[0][0] == 0) { tele_pos[0][0] = pos-draw_saddr; tele_grid[0][0] = i; }

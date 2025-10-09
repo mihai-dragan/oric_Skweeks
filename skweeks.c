@@ -18,6 +18,8 @@
 #include "intro.h"
 #include "selector.h"
 
+unsigned char __near__ GetKey (unsigned char code);
+
 void init_skweeks() {
     int i;
     for(i=0; i<8; i++) {
@@ -29,7 +31,7 @@ void init_skweeks() {
 }
 
 void main() {
-    byte c, i;
+    byte c;
     clock_t interval = CLOCKS_PER_SEC/30;
     clock_t prevaclk = 0;
     clock_t prevsclk = 0;
@@ -44,45 +46,49 @@ void main() {
         restartlvl = 0;
         lives = 3;
         while(1) {
-            for(i=0; i<kbhit(); i++) cgetc();
             tele_grid[0][0]=0;tele_grid[1][0]=0;tele_grid[2][0]=0;tele_grid[3][0]=0;
             load_level();
             player = &skweeks[cur_player];
             while(notsleeping > 0 && restartlvl == 0) {
-                if(kbhit()>0 && (player->action==STAY || player->action==SLEEP)) {
-                    for(i=0; i<kbhit(); i++) c = cgetc();
-                    if(c=='d' && (byte)(lvlgrid[player->gridpos+1]<<5)==0) {
-                        if(player->action == SLEEP) notsleeping = notsleeping + 1;
-                        player->action = MOVE;
-                        player->movedir = RIGHT;
-                    }
-                    if(c=='a' && (byte)(lvlgrid[player->gridpos-1]<<5)==0) {
-                        if(player->action == SLEEP) notsleeping = notsleeping + 1;
-                        player->action = MOVE;
-                        player->movedir = LEFT;
-                    }
-                    if(c=='s' && (byte)(lvlgrid[player->gridpos+13]<<5)==0) {
-                        if(player->action == SLEEP) notsleeping = notsleeping + 1;
-                        player->action = MOVE;
-                        player->movedir = DOWN;
-                        need_cdclean = 1;
-                    }
-                    if(c=='w' && (byte)(lvlgrid[player->gridpos-13]<<5)==0) {
-                        if(player->action == SLEEP) notsleeping = notsleeping + 1;
-                        player->action = MOVE;
-                        player->movedir = UP;
-                        need_cdclean = 1;
-                    }
-                    if(c==CH_ENTER) {
+                if(player->action==STAY || player->action==SLEEP) {
+					object_under = lvlgrid[player->gridpos]>>3;
+					if(object_under!=8 && object_under!=9 && object_under!=10 && object_under!=11) {
+						if(GetKey(15)/*d*/ && (byte)(lvlgrid[player->gridpos+1]<<5)==0) {
+							if(player->action == SLEEP) notsleeping = notsleeping + 1;
+							player->movedir = RIGHT; 
+							if(lvlgrid[player->gridpos+1]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos+3; cur_bumper_frame = 1; }
+							else player->action = MOVE;
+						}
+						if(GetKey(53)/*a*/ && (byte)(lvlgrid[player->gridpos-1]<<5)==0) {
+							if(player->action == SLEEP) notsleeping = notsleeping + 1;
+							player->movedir = LEFT;
+							if(lvlgrid[player->gridpos-1]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos-3; cur_bumper_frame = 1; }
+							else player->action = MOVE;
+						}
+						if(GetKey(54)/*s*/ && (byte)(lvlgrid[player->gridpos+13]<<5)==0) {
+							if(player->action == SLEEP) notsleeping = notsleeping + 1;
+							player->movedir = DOWN;
+							if(lvlgrid[player->gridpos+13]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos+720; cur_bumper_frame = 1; }
+							else { player->action = MOVE; need_cdclean = 1; }
+						}
+						if(GetKey(55)/*w*/ && (byte)(lvlgrid[player->gridpos-13]<<5)==0) {
+							if(player->action == SLEEP) notsleeping = notsleeping + 1;
+							player->movedir = UP;
+							if(lvlgrid[player->gridpos-13]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos-720; cur_bumper_frame = 1; }
+							else { player->action = MOVE; need_cdclean = 1; }
+						}
+					}
+                    if(GetKey(61)/*Return*/) {
                         cur_player = cur_player + 1;
                         if(!(cur_player<nr_skweeks)) cur_player = 0;
                         player = &skweeks[cur_player];
                         player->action = SELECT;
-                        while(kbhit()>0) wait_centis(1);
                     }
-                    if(c==CH_ESC) {
+                    if(GetKey(13)/*Esc*/) {
+                        // debug: puttext(0xBFB9,"Esc!"); wait(10);
                         restartlvl = 1;
                     }
+                    wait_centis(1);
                 }
                 if(clock()-prevsclk > CLOCKS_PER_SEC) {
                     lvltime = lvltime - 1;
@@ -117,6 +123,7 @@ void main() {
                 if(lives==0) {
                     POKE(0xbf7b,'0');
                     draw__spr(youlost, 10, 10, 0xa64f);
+                    wait_centis(300);
                     break;
                 } else {
                     memset((char*)0xBF68, ' ', 200);  // Clear lower text area
@@ -131,11 +138,12 @@ void main() {
                 curlevel = curlevel + 1;
                 if(curlevel==NRLEVELS) {
                     draw__spr(youwon, 10, 10, 0xa64f);
-            break;
+                    wait_centis(300);
+					break;
                 } else {
                     memset((char*)0xBF68, ' ', 200);  // Clear lower text area
                     memcpy((char*)0xBF69,any_key,strlen(any_key));
-                    draw__spr(bravo, 10, 20, 0xa64f);
+                    draw__spr(bravo, 6, 10, 0xa651);
                     draw_string("Next level Password: ",0xAB20);
                     draw_string(keycodes[curlevel],0xAB35);
                     while(kbhit()>0) { c = cgetc(); wait_centis(1); }

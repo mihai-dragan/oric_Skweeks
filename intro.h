@@ -84,10 +84,10 @@ void play_intro() {
 					sng_cntr = 0;
 					pattern = bass_sng[pat_nr];
 					if(pattern[pat_pos]==0) note = 0;
-					else note = freq_table[pattern[pat_pos]>>4][pattern[pat_pos]&15];
+					else note = freq_table[(pattern[pat_pos]>>4)-1][pattern[pat_pos]&15];
 					pattern = lead_sng[pat_nr];
 					if(pattern[pat_pos]==0) note_lead = 0;
-					else note_lead = freq_table[pattern[pat_pos]>>4][pattern[pat_pos]&15];
+					else note_lead = freq_table[(pattern[pat_pos]>>4)-1][pattern[pat_pos]&15];
 					pat_pos = pat_pos + 1;
 					if(pat_pos>pat_length) {
 						pat_pos = 0;

@@ -21,6 +21,7 @@ void move_right(struct sprite *spr) {
 				spr->action = TELEPORT;
 				return;
 			}
+			if(lvlgrid[spr->gridpos+1]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos+3; cur_bumper_frame = 1; }
 			if((byte)(lvlgrid[spr->gridpos+1]<<5)!=0) {
                 if((lvlgrid[spr->gridpos]>>3)==spr->color+4) {
                     notsleeping = notsleeping - 1;
@@ -51,6 +52,7 @@ void move_left(struct sprite *spr) {
 					spr->action = TELEPORT;
 					return;
 				}
+				if(lvlgrid[spr->gridpos-1]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos-3; cur_bumper_frame = 1; }
 				if((byte)(lvlgrid[spr->gridpos-1]<<5)!=0) {
                     if((lvlgrid[spr->gridpos]>>3)==spr->color+4) {
                         notsleeping = notsleeping - 1;
@@ -91,6 +93,7 @@ void move_down(struct sprite *spr) {
 				spr->action = TELEPORT;
 				return;
 			}
+			if(lvlgrid[spr->gridpos+13]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos+720; cur_bumper_frame = 1; }
 			if((byte)(lvlgrid[spr->gridpos+13]<<5)!=0) {
                 if((lvlgrid[spr->gridpos]>>3)==spr->color+4) {
                     notsleeping = notsleeping - 1;
@@ -125,6 +128,7 @@ void move_up(struct sprite *spr) {
 				spr->action = TELEPORT;
 				return;
 			}
+			if(lvlgrid[spr->gridpos-13]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos-720; cur_bumper_frame = 1; }
 			if((byte)(lvlgrid[spr->gridpos-13]<<5)!=0) {
                 if((lvlgrid[spr->gridpos]>>3)==spr->color+4) {
                     notsleeping = notsleeping - 1;
@@ -136,37 +140,25 @@ void move_up(struct sprite *spr) {
 }
 
 void teleport_left(struct sprite *spr) {
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]&0b11111000;
-	if(spr->pos==tele_pos[spr->color][0]) { spr->pos = tele_pos[spr->color][1]; spr->gridpos = tele_grid[spr->color][1]; }
-	else { spr->pos = tele_pos[spr->color][0]; spr->gridpos = tele_grid[spr->color][0]; }
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]|(spr->color+4);
+	if(lvlgrid[spr->gridpos-1]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos-3; cur_bumper_frame = 1; return; }
 	if((byte)(lvlgrid[spr->gridpos-1]<<5)!=0) spr->action = STAY;
 	else spr->action = MOVE;
 }
 
 void teleport_right(struct sprite *spr) {
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]&0b11111000;
-	if(spr->pos==tele_pos[spr->color][0]) { spr->pos = tele_pos[spr->color][1]; spr->gridpos = tele_grid[spr->color][1]; }
-	else { spr->pos = tele_pos[spr->color][0]; spr->gridpos = tele_grid[spr->color][0]; }
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]|(spr->color+4);
+	if(lvlgrid[spr->gridpos+1]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos+3; cur_bumper_frame = 1; return; }
 	if((byte)(lvlgrid[spr->gridpos+1]<<5)!=0) spr->action = STAY;
 	else spr->action = MOVE;
 }
 
 void teleport_up(struct sprite *spr) {
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]&0b11111000;
-	if(spr->pos==tele_pos[spr->color][0]) { spr->pos = tele_pos[spr->color][1]; spr->gridpos = tele_grid[spr->color][1]; }
-	else { spr->pos = tele_pos[spr->color][0]; spr->gridpos = tele_grid[spr->color][0]; }
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]|(spr->color+4);
+	if(lvlgrid[spr->gridpos-13]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos-720; cur_bumper_frame = 1; return; }
 	if((byte)(lvlgrid[spr->gridpos-13]<<5)!=0) spr->action = STAY;
 	else spr->action = MOVE;
 }
 
 void teleport_down(struct sprite *spr) {
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]&0b11111000;
-	if(spr->pos==tele_pos[spr->color][0]) { spr->pos = tele_pos[spr->color][1]; spr->gridpos = tele_grid[spr->color][1]; }
-	else { spr->pos = tele_pos[spr->color][0]; spr->gridpos = tele_grid[spr->color][0]; }
-	lvlgrid[spr->gridpos] = lvlgrid[spr->gridpos]|(spr->color+4);
+	if(lvlgrid[spr->gridpos+13]==0x80) { spr->action = BUMP; cur_bumper_pos = spr->pos+720; cur_bumper_frame = 1; return; }
 	if((byte)(lvlgrid[spr->gridpos+13]<<5)!=0) spr->action = STAY;
 	else spr->action = MOVE;
 }

@@ -11,11 +11,10 @@ void setup() {
 	memset((char*)0xBF68, ' ', 200);  // Clear lower text area
 	
 	// initialize frequency table
-	freq_table[1][0]=956;freq_table[1][1]=902;freq_table[1][2]=851;freq_table[1][3]=804;freq_table[1][4]=758;freq_table[1][5]=716;
-	freq_table[1][6]=676;freq_table[1][7]=638;freq_table[1][8]=602;freq_table[1][9]=568;freq_table[1][10]=536;freq_table[1][11]=506;
-	for(i=0; i<12; i++) freq_table[2][i] = freq_table[1][i]/2;
-	for(i=0; i<12; i++) freq_table[3][i] = freq_table[1][i]/4;
-	for(i=0; i<12; i++) freq_table[4][i] = freq_table[1][i]/8;
+	freq_table[0][0]=956;freq_table[0][1]=902;freq_table[0][2]=851;freq_table[0][3]=804;freq_table[0][4]=758;freq_table[0][5]=716;
+	freq_table[0][6]=676;freq_table[0][7]=638;freq_table[0][8]=602;freq_table[0][9]=568;freq_table[0][10]=536;freq_table[0][11]=506;
+	for(i=0; i<12; i++) freq_table[1][i] = freq_table[0][i]/2;
+	for(i=0; i<12; i++) freq_table[2][i] = freq_table[0][i]/4;
 }
 
 void init_aicCY() {
@@ -62,6 +61,10 @@ void clear_screen() {
 		memset((char*)addr,64,39);
 		addr = addr + 40;
 	}
+}
+
+void puttext(int haddr,char *str) {
+	memcpy((char*)haddr, str, strlen(str));
 }
 
 void wait_centis(int centisecs) {
