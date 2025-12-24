@@ -9,9 +9,9 @@
 #include "song.h"
 #include "instr.h"
 #include "vars.h"
-#include "sound.h"
 #include "utils.h"
 #include "draw.h"
+#include "sound.h"
 #include "move.h"
 #include "load.h"
 #include "animate.h"
@@ -31,7 +31,7 @@ void init_skweeks() {
 }
 
 void main() {
-    byte c;
+    byte c, i;
     clock_t interval = CLOCKS_PER_SEC/30;
     clock_t prevaclk = 0;
     clock_t prevsclk = 0;
@@ -41,18 +41,18 @@ void main() {
         curlevel = selector();
         clear_screen();
         init_aicCY();
-        init_skweeks();
         zoom[6] = 0xf;
         restartlvl = 0;
         lives = 3;
         while(1) {
             tele_grid[0][0]=0;tele_grid[1][0]=0;tele_grid[2][0]=0;tele_grid[3][0]=0;
+            init_skweeks();
             load_level();
             player = &skweeks[cur_player];
             while(notsleeping > 0 && restartlvl == 0) {
                 if(player->action==STAY || player->action==SLEEP) {
 					object_under = lvlgrid[player->gridpos]>>3;
-					if(object_under!=8 && object_under!=9 && object_under!=10 && object_under!=11) {
+					if(object_under!=8 && object_under!=9 && object_under!=10 && object_under!=11) { // can't move if stopped over arrow
 						if(GetKey(15)/*d*/ && (byte)(lvlgrid[player->gridpos+1]<<5)==0) {
 							if(player->action == SLEEP) notsleeping = notsleeping + 1;
 							player->movedir = RIGHT; 
@@ -83,12 +83,13 @@ void main() {
                         if(!(cur_player<nr_skweeks)) cur_player = 0;
                         player = &skweeks[cur_player];
                         player->action = SELECT;
+                        player->steps = 0;
                     }
                     if(GetKey(13)/*Esc*/) {
                         // debug: puttext(0xBFB9,"Esc!"); wait(10);
                         restartlvl = 1;
                     }
-                    wait_centis(1);
+                    wait_centis(5);
                 }
                 if(clock()-prevsclk > CLOCKS_PER_SEC) {
                     lvltime = lvltime - 1;
@@ -116,38 +117,59 @@ void main() {
                     prevaclk = clock();
                 }
             }
+            stop_sound(); load_instrB(boingbass); playtime=1; i = 0;
             wait(1);
             clear_screen();
             if(restartlvl == 1) {
                 lives = lives - 1;
                 if(lives==0) {
                     POKE(0xbf7b,'0');
-                    draw__spr(youlost, 10, 10, 0xa64f);
-                    wait_centis(300);
+                    draw_string("You lost!",0xa64f);
+                    while(i<29) {
+						if(clock()-prevsclk > (CLOCKS_PER_SEC/8)) {
+							if(lost_pat[i]!=0) play_chanB(freq_table[(lost_pat[i]>>4)-1][lost_pat[i]&15]);
+							i = i+1;
+							prevsclk = clock();
+						}
+					}
+					while(kbhit()>0) { c = cgetc(); wait_centis(1); }
+                    wait_centis(200);
                     break;
                 } else {
                     memset((char*)0xBF68, ' ', 200);  // Clear lower text area
                     memcpy((char*)0xBF69,any_key,strlen(any_key));
-                    draw__spr(tryagain,10,10, 0xa650);
+                    draw_string("Try again!",0xa650);
                     restartlvl = 0;
                     while(kbhit()>0) { c = cgetc(); wait_centis(1); }
-                    while(kbhit()==0) wait_centis(1);
+                    while(kbhit()==0) {
+						if(clock()-prevsclk > (CLOCKS_PER_SEC/8)) {
+							if(i<29 && lost_pat[i]!=0) play_chanB(freq_table[(lost_pat[i]>>4)-1][lost_pat[i]&15]);
+							i = i+1;
+							prevsclk = clock();
+						}
+					}
                     while(kbhit()>0) { c = cgetc(); wait_centis(1); }
                 }
             } else {
                 curlevel = curlevel + 1;
                 if(curlevel==NRLEVELS) {
-                    draw__spr(youwon, 10, 10, 0xa64f);
+                    draw_string("You won!",0xa64f);
                     wait_centis(300);
 					break;
                 } else {
                     memset((char*)0xBF68, ' ', 200);  // Clear lower text area
                     memcpy((char*)0xBF69,any_key,strlen(any_key));
-                    draw__spr(bravo, 6, 10, 0xa651);
+                    draw_string("Bravo!",0xa651);
                     draw_string("Next level Password: ",0xAB20);
                     draw_string(keycodes[curlevel],0xAB35);
                     while(kbhit()>0) { c = cgetc(); wait_centis(1); }
-                    while(kbhit()==0) wait_centis(1);
+                    while(kbhit()==0) {
+						if(clock()-prevsclk > (CLOCKS_PER_SEC/8)) {
+							if(i<41 && bravo_pat[i]!=0) play_chanB(freq_table[(bravo_pat[i]>>4)-1][bravo_pat[i]&15]);
+							i = i+1;
+							prevsclk = clock();
+						}
+					}
                     while(kbhit()>0) { c = cgetc(); wait_centis(1); }
                 }
             }

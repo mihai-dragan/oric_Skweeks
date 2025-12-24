@@ -16,9 +16,9 @@ char *instr_txt[] = { "--Instructions--",
 char credit_odev1[] = "Original";
 char credit_odev2[] = "game by";
 char *credits_txt[] = { "Original programmers",
-" [Aimga] Francois Mathieu",
-" [ATARI ST] Xavier Monset",
-" [ATARI ST] Pascal Caillaud",
+" [Amiga] Francois Mathieu",
+" [Atari ST] Xavier Monset",
+" [Atari ST] Pascal Caillaud",
 " [PC] Karl Alexandre",
 "Original artwork",
 " Stephane Renaudin",

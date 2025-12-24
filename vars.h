@@ -36,6 +36,8 @@ byte lvlgrid[104];
 
 byte select_cntr = 0;
 
+unsigned int freq_table[3][12];
+
 byte spr_bwidth = 3; // how many bytes wide (groups of 6 pixels)
 byte spr_height = 18; // how many lines
 byte last_frame = 2;
@@ -46,7 +48,6 @@ byte object_under;
 byte need_cleanup = 0;
 byte need_cdclean = 0;
 byte* clean_spr;
-int clean_addr;
 
 byte notsleeping = 0;
 byte downmap[3] = { 2, 0, 1 };
@@ -55,7 +56,7 @@ byte upmap[3] = { 0, 2, 1 };
 char statxt[39] = "LIVES            TIMER           JOKERS";
 char any_key[] = "Press any key to start";
 unsigned int draw_saddr = 0xa3c0;  // start address of game draw area
-byte* chr = (byte*)0x9900;  // pointer to ASCII characters
+byte *chrs = (byte *)0x9900;  // pointer to ASCII characters
 byte playing = 0;
 
 unsigned int tele_pos[4][2];

@@ -3,7 +3,6 @@ void move_right(struct sprite *spr) {
 		spr->cur_frame++;
 		spr->frame_pointer+=frame_offset;
 		if(spr->cur_frame == last_frame) {
-			if(!playing) { load_instrA(footstep); playtime = 1; play_chanA(0); }
 			need_cleanup = 1;
 			spr->pos = spr->pos+1;
 		}
@@ -34,7 +33,6 @@ void move_right(struct sprite *spr) {
 
 void move_left(struct sprite *spr) {
 	if(spr->cur_frame == 0) { // set next frame
-		if(!playing) { load_instrA(footstep); playtime = 1; play_chanA(0); }
 		spr->cur_frame = last_frame;
 		spr->frame_pointer = last_frame_offset;
 	} else {
@@ -78,7 +76,6 @@ void move_down(struct sprite *spr) {
 		spr->cur_frame++;
 		spr->frame_pointer+=frame_offset;
 	} else {
-		if(!playing) { load_instrA(footstep); playtime = 1; play_chanA(0); }
 		spr->pos = spr->pos+80;
 		spr->cur_frame = 0;
 		spr->frame_pointer = 0;
@@ -113,7 +110,6 @@ void move_up(struct sprite *spr) {
 		spr->cur_frame++;
 		spr->frame_pointer+=frame_offset;
 	} else {
-		if(!playing) { load_instrA(footstep); playtime = 1; play_chanA(0); }
 		spr->pos = spr->pos-80;
 		spr->cur_frame = 0;
 		spr->frame_pointer = 0;

@@ -1,14 +1,10 @@
-char buf[10];
+//debug: char buf[10];
 
 void animate_sprite(struct sprite *spr) {
 	// draw
-    if(spr->action==STAY || spr->action==SLEEP) {
-		select_cntr = 0;
-		if(spr->action==SLEEP) draw_spr(spr->sleep_ani,draw_saddr+spr->pos);
-		else draw_spr(spr->stay_ani,draw_saddr+spr->pos);
-	}
 	if(spr->action==SELECT) {
-		if(select_cntr==1) { stop_sound(); load_instrA(select); playtime = 1; play_chanA(0); }
+		if(select_cntr==1) play_effect(boingbass2,freq_table[1][0]);
+		if(select_cntr==4) play_effect(boingbass2,freq_table[2][4]);
 		if(select_cntr<7) {
 			if((lvlgrid[spr->gridpos]>>3)==spr->color+4) draw_selected(spr->sleep_ani,draw_saddr+spr->pos);
 			else draw_selected(spr->stay_ani,draw_saddr+spr->pos);
@@ -23,10 +19,12 @@ void animate_sprite(struct sprite *spr) {
             }
 			select_cntr = 0;
 		}
+		// debug: 
+		//puttext(0xBFB9,itoa(instruments[0].snd_time, buf, 10));
 	}
 
 	if(spr->action == TELEPORT) {
-		if(select_cntr==0) { stop_sound(); load_instrA(zoom); playing = 1; playtime = 1; play_chanA(0); }
+		if(select_cntr==0) play_effect(zoom,0);
 		object_under = lvlgrid[player->gridpos]>>3;
 		clean_spr=object_sprs[object_under];
 		draw_teleport(clean_spr, draw_saddr+spr->pos, select_cntr);
@@ -64,7 +62,7 @@ void animate_sprite(struct sprite *spr) {
 				case UP: draw_spr(&bumper[216],draw_saddr+cur_bumper_pos); wait_centis(4); break;
 				case DOWN: draw_spr(&bumper[270],draw_saddr+cur_bumper_pos); wait_centis(4); break;
 			}
-			stop_sound(); load_instrA(bumps); playtime = 1; play_chanA(0); playing=1;
+			play_effect(bumps,0);
 			if((lvlgrid[spr->gridpos]>>3)==spr->color+12) { select_cntr = 0; spr->action = TELEPORT; return; }
 		}
 		if(cur_bumper_frame == 1) { cur_bumper_frame = 2; draw_spr(&bumper[54],draw_saddr+cur_bumper_pos); wait_centis(4); return; }
@@ -111,19 +109,26 @@ void animate_sprite(struct sprite *spr) {
 						draw_spr(spr->walk_up_ani+spr->frame_pointer,draw_saddr+spr->pos);
 						break;
 		}
-		// debug: puttext(0xBFB9,itoa(player->pos, buf, 10));
+		if(!playing) { stop_sound(); load_instrA(footstep); playtime = 1; play_chanA(0); playing=1; playtime=2; }
 	}
+	
+	if(spr->action==STAY || spr->action==SLEEP) {
+		select_cntr = 0;
+		if(spr->action==SLEEP) draw_spr(spr->sleep_ani,draw_saddr+spr->pos);
+		else draw_spr(spr->stay_ani,draw_saddr+spr->pos);
+	}
+	
 	// logic
     object_under = lvlgrid[player->gridpos]>>3;
 	clean_spr=object_sprs[object_under];
 	if(object_under == 1) { // heart
-		stop_sound(); load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
+		play_effect(coin,0);
 		lives = lives + 1;
 		POKE(0xBF91,48+(lives/10)); POKE(0xBF92,48+(lives%10));
 		lvlgrid[player->gridpos] = spr->color+4;
 	}
 	if(object_under == 2) { // clock
-		stop_sound(); load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
+		play_effect(coin,0);
 		lvltime = lvltime + 20;
 		min2 = lvltime/600; min1 = (lvltime/60)%10; secs2 = (lvltime%60)/10 ; secs1 = (lvltime%60)%10;
 		POKE(0xBFA2, 48+min2); POKE(0xBFA3, 48+min1); POKE(0xBFA5, 48+secs2); POKE(0xBFA6, 48+secs1);
@@ -131,25 +136,25 @@ void animate_sprite(struct sprite *spr) {
 		lvlgrid[player->gridpos] = spr->color+4;
 	}
 	if(object_under == 3) { // joker
-		stop_sound(); load_instrA(coin); playtime = 1; play_chanA(0); playing=1;
+		play_effect(coin,0);
 		jokers = jokers + 1;
 		POKE(0xBFB6,48+(jokers/10)); POKE(0xBFB7,48+(jokers%10));
 		lvlgrid[player->gridpos] = spr->color+4;
 	}
 	if(object_under == 8 && player->steps == 0) { // arrow right
-		if((byte)(lvlgrid[player->gridpos+1]<<5)==0) { stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1; player->action = MOVE; player->movedir = RIGHT; }
+		if((byte)(lvlgrid[player->gridpos+1]<<5)==0) { play_effect(arrow,0); player->action = MOVE; player->movedir = RIGHT; }
 		else player->action = STAY;
 	}
 	if(object_under == 9 && player->steps == 0) { // arrow left
-		if((byte)(lvlgrid[player->gridpos-1]<<5)==0) { stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1; player->action = MOVE; player->movedir = LEFT; }
+		if((byte)(lvlgrid[player->gridpos-1]<<5)==0) { play_effect(arrow,0); player->action = MOVE; player->movedir = LEFT; }
 		else player->action = STAY;
 	}
 	if(object_under == 10 && player->steps == 0) { // arrow up
-		if((byte)(lvlgrid[player->gridpos-13]<<5)==0) { stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1; player->action = MOVE; player->movedir = UP; need_cdclean = 1; }
+		if((byte)(lvlgrid[player->gridpos-13]<<5)==0) { play_effect(arrow,0); player->action = MOVE; player->movedir = UP; need_cdclean = 1; }
 		else player->action = STAY;
 	}
 	if(object_under == 11 && player->steps == 0) { // arrow down
-		if((byte)(lvlgrid[player->gridpos+13]<<5)==0) { stop_sound(); load_instrA(arrow); playtime = 1; play_chanA(0); playing=1; player->action = MOVE; player->movedir = DOWN; need_cdclean = 1; }
+		if((byte)(lvlgrid[player->gridpos+13]<<5)==0) { play_effect(arrow,0); player->action = MOVE; player->movedir = DOWN; need_cdclean = 1; }
 		else player->action = STAY;
 	}
 }

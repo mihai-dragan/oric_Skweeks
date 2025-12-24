@@ -38,7 +38,6 @@ struct instrument {
 
 struct instrument instruments[2];
 
-unsigned int freq_table[3][12];
 byte mixer = 127;
 byte playtime = 0;
 
@@ -161,4 +160,12 @@ byte load_instrB(byte *instr) {
 		instruments[1].snd_time = instr[3];
 		return 4;
 	}
+}
+
+void play_effect(byte *name, unsigned int freq) {
+	stop_sound();
+	load_instrA(name);
+	playtime = 1;
+	play_chanA(freq);
+	playtime=2; playing=1;
 }

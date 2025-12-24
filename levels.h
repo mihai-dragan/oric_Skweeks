@@ -1,4 +1,5 @@
 // 0x00 00000000 - empty tile
+// BLOCKING OBJECTS
 // 0x01 00000001 - wall
 // 0x02 00000010 - blocker 1
 // 0x03 00000011 - blocker 2
@@ -6,9 +7,26 @@
 // 0x05 xxxxx101 - red skweek
 // 0x06 xxxxx110 - yellow skweek
 // 0x07 xxxxx111 - green skweek
-// first found on level      5     5       7       0      10           20       30      50     60
-//      ...xxxxx - objects (heart, timer, joker, 4 exit, 4 arrows, 4 teleport, bumper, lock, 4 bomb )
+// NON BLOCKING OBJECTS
+// first found on level      5      5       7      0       10         20        30
+//      ...xxxxx - objects (heart, timer, joker, 4 exit, 4 arrows, 4 teleport, bumper )
 //      xxx..xxx - object color
+// 0x08 00001000 - heart
+// 0x10 00010000 - timer
+// 0x18 00011000 - joker
+// 0x20 00100000 - blue exit
+// 0x28 00101000 - red exit
+// 0x30 00110000 - yellow exit
+// 0x38 00111000 - green exit
+// 0x40 01000000 - right arrow
+// 0x48 01001000 - left arrow
+// 0x50 01010000 - up arrow
+// 0x58 01011000 - down arrow
+// 0x60 01100000 - blue teleport
+// 0x68 01101000 - red teleport
+// 0x70 01110000 - yellow teleport
+// 0x78 01111000 - green teleport
+// 0x80 10000000 - bumper
 
 byte NRLEVELS = 50;
 
@@ -422,27 +440,6 @@ byte level[50][104]= {
 	0x01,0x02,0x00,0x00,0x20,0x01,0x00,0x00,0x00,0x00,0x00,0x48,0x01,
 	0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01 }
 };
-
-// 0x08 00001000 - heart
-// 0x10 00010000 - timer
-// 0x18 00011000 - joker
-// 0x20 00100000 - blue exit
-// 0x28 00101000 - red exit
-// 0x30 00110000 - yellow exit
-// 0x38 00111000 - green exit
-// 0x40 01000000 - right arrow
-// 0x48 01001000 - left arrow
-// 0x50 01010000 - up arrow
-// 0x58 01011000 - down arrow
-// 0x60 01100000 - blue teleport
-// 0x68 01101000 - red teleport
-// 0x70 01110000 - yellow teleport
-// 0x78 01111000 - green teleport
-// 0x80 10000000 - bumper
-// 0xE0 11100000 - blue button
-// 0xE8 11101000 - red button
-// 0xF0 11110000 - yellow button
-// 0xF8 11111000 - green button
 
 /*,
 { 	0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,0x01,

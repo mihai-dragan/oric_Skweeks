@@ -73,7 +73,7 @@ void draw_char(byte cnum, int haddr) {
     unsigned int offst = cnum<<3;
     for(i=0;i<8;i++) {
         byte* addr = (byte*)haddr;
-        *addr = 64+chr[offst+i];
+        *addr = 64+chrs[offst+i];
         haddr=haddr+40;
     }
 }
