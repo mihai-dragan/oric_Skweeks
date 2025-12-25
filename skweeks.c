@@ -31,10 +31,11 @@ void init_skweeks() {
 }
 
 void main() {
-    byte c, i;
+    byte c, i, keycode, keycount;
     clock_t interval = CLOCKS_PER_SEC/30;
     clock_t prevaclk = 0;
     clock_t prevsclk = 0;
+    keycount = 0;
     while(1) {
         setup();
         play_intro();
@@ -54,42 +55,78 @@ void main() {
 					object_under = lvlgrid[player->gridpos]>>3;
 					if(object_under!=8 && object_under!=9 && object_under!=10 && object_under!=11) { // can't move if stopped over arrow
 						if(GetKey(15)/*d*/ && (byte)(lvlgrid[player->gridpos+1]<<5)==0) {
-							if(player->action == SLEEP) notsleeping = notsleeping + 1;
-							player->movedir = RIGHT; 
-							if(lvlgrid[player->gridpos+1]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos+3; cur_bumper_frame = 1; }
-							else player->action = MOVE;
+                            if(keycount==0 || keycode!=15) { 
+                                if(keycount==0) keycount++; else keycount = 0;
+                                if(keycode!=15) keycode = 15;
+                            } else {
+                                if(player->action == SLEEP) notsleeping = notsleeping + 1;
+                                player->movedir = RIGHT; 
+                                if(lvlgrid[player->gridpos+1]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos+3; cur_bumper_frame = 1; }
+                                else player->action = MOVE;
+                                keycount == 0;
+                            }
 						}
 						if(GetKey(53)/*a*/ && (byte)(lvlgrid[player->gridpos-1]<<5)==0) {
-							if(player->action == SLEEP) notsleeping = notsleeping + 1;
-							player->movedir = LEFT;
-							if(lvlgrid[player->gridpos-1]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos-3; cur_bumper_frame = 1; }
-							else player->action = MOVE;
+                            if(keycount==0 || keycode!=53) { 
+                                if(keycount==0) keycount++; else keycount = 0;
+                                if(keycode!=53) keycode = 53;
+                            } else {
+                                if(player->action == SLEEP) notsleeping = notsleeping + 1;
+                                player->movedir = LEFT;
+                                if(lvlgrid[player->gridpos-1]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos-3; cur_bumper_frame = 1; }
+                                else player->action = MOVE;
+                                keycount == 0;
+                            }
 						}
 						if(GetKey(54)/*s*/ && (byte)(lvlgrid[player->gridpos+13]<<5)==0) {
-							if(player->action == SLEEP) notsleeping = notsleeping + 1;
-							player->movedir = DOWN;
-							if(lvlgrid[player->gridpos+13]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos+720; cur_bumper_frame = 1; }
-							else { player->action = MOVE; need_cdclean = 1; }
+                            if(keycount==0 || keycode!=54) { 
+                                if(keycount==0) keycount++; else keycount = 0;
+                                if(keycode!=54) keycode = 54;
+                            } else {
+                                if(player->action == SLEEP) notsleeping = notsleeping + 1;
+                                player->movedir = DOWN;
+                                if(lvlgrid[player->gridpos+13]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos+720; cur_bumper_frame = 1; }
+                                else { player->action = MOVE; need_cdclean = 1; }
+                                keycount == 0;
+                            }
 						}
 						if(GetKey(55)/*w*/ && (byte)(lvlgrid[player->gridpos-13]<<5)==0) {
-							if(player->action == SLEEP) notsleeping = notsleeping + 1;
-							player->movedir = UP;
-							if(lvlgrid[player->gridpos-13]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos-720; cur_bumper_frame = 1; }
-							else { player->action = MOVE; need_cdclean = 1; }
+                            if(keycount==0 || keycode!=55) { 
+                                if(keycount==0) keycount++; else keycount = 0;
+                                if(keycode!=55) keycode = 55;
+                            } else {
+                                if(player->action == SLEEP) notsleeping = notsleeping + 1;
+                                player->movedir = UP;
+                                if(lvlgrid[player->gridpos-13]==0x80) { player->action = BUMP; cur_bumper_pos = player->pos-720; cur_bumper_frame = 1; }
+                                else { player->action = MOVE; need_cdclean = 1; }
+                                keycount == 0;
+                            }
 						}
 					}
                     if(GetKey(61)/*Return*/) {
-                        cur_player = cur_player + 1;
-                        if(!(cur_player<nr_skweeks)) cur_player = 0;
-                        player = &skweeks[cur_player];
-                        player->action = SELECT;
-                        player->steps = 0;
+                        if(keycount==0 || keycode!=61) { 
+                            if(keycount==0) keycount++; else keycount = 0;
+                            if(keycode!=61) keycode = 61;
+                        } else {
+                            cur_player = cur_player + 1;
+                            if(!(cur_player<nr_skweeks)) cur_player = 0;
+                            player = &skweeks[cur_player];
+                            player->action = SELECT;
+                            player->steps = 0;
+                            keycount == 0;
+                        }
                     }
                     if(GetKey(13)/*Esc*/) {
                         // debug: puttext(0xBFB9,"Esc!"); wait(10);
-                        restartlvl = 1;
+                        if(keycount==0 || keycode!=13) { 
+                            if(keycount==0) keycount++; else keycount = 0;
+                            if(keycode!=13) keycode = 13;
+                        } else {
+                            restartlvl = 1;
+                            keycount == 0;
+                        }
                     }
-                    wait_centis(5);
+                    wait_centis(2);
                 }
                 if(clock()-prevsclk > CLOCKS_PER_SEC) {
                     lvltime = lvltime - 1;
